@@ -19,7 +19,7 @@ CUR_DIR = Path(__file__).resolve().parent
 sys.path.append(str(CUR_DIR.parent.parent))
 
 from data_collector.base import BaseCollector, BaseNormalize, BaseRun
-from data_collector.utils import calc_adjusted_price
+from data_collector.utils import calc_adjusted_price, get_calendar_list
 
 
 class BaostockCollectorHS3001d(BaseCollector):
@@ -72,7 +72,7 @@ class BaostockCollectorHS3001d(BaseCollector):
 
     @staticmethod
     def process_interval(interval: str):
-        if interval == "1d":
+        if (interval == "1d"):
             return {"interval": "d", "fields": "date,code,open,high,low,close,volume,amount,adjustflag"}
 
     def get_data(
@@ -130,43 +130,85 @@ class BaostockNormalizeHS3001d(BaseNormalize):
     COLUMNS = ["open", "close", "high", "low", "volume"]
 
     def __init__(
-        self, qlib_data_1d_dir: [str, Path], date_field_name: str = "date", symbol_field_name: str = "symbol", **kwargs
+        self, date_field_name: str = "date", symbol_field_name: str = "symbol", **kwargs
     ):
         """
         Parameters
         ----------
-        qlib_data_1d_dir: str, Path
-            the qlib data to be updated for yahoo, usually from: Normalised to 1d using local 1d data
         date_field_name: str
             date field name, default is date
         symbol_field_name: str
             symbol field name, default is symbol
         """
         bs.login()
-        qlib.init(provider_uri=qlib_data_1d_dir)
-        self.all_1d_data = D.features(D.instruments("all"), ["$paused", "$volume", "$factor", "$close"], freq="day")
+        qlib.init()
         super(BaostockNormalizeHS3001d, self).__init__(date_field_name, symbol_field_name)
 
     def adjusted_price(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = calc_adjusted_price(
-            df=df,
-            _date_field_name=self._date_field_name,
-            _symbol_field_name=self._symbol_field_name,
-            frequence="1d",
-            _1d_data_all=self.all_1d_data,
-        )
-        return df
+        """
+        Adjust the price fields based on adjustment factors.
+        """
+        if df.empty:
+            return df
+        df = df.copy()
+        df.set_index(self._date_field_name, inplace=True)
+        if "adjustflag" in df:
+            df["factor"] = df["adjustflag"].astype(float)
+            df["factor"] = df["factor"].fillna(method="ffill")
+        else:
+            df["factor"] = 1
+        for col in self.COLUMNS:
+            if col not in df.columns:
+                continue
+            if col == "volume":
+                df[col] = df[col] / df["factor"]
+            else:
+                df[col] = df[col] * df["factor"]
+        df.index.names = [self._date_field_name]
+        return df.reset_index()
 
     def normalize(self, df: pd.DataFrame) -> pd.DataFrame:
-        # adjusted price
+        """
+        Normalize the data by adjusting prices and handling missing values.
+        """
+        if df.empty:
+            return df
         df = self.adjusted_price(df)
+        df = self._manual_adj_data(df)
         return df
+
+    def _manual_adj_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Manually adjust data: All fields (except change) are standardized according to the close of the first day.
+        """
+        if df.empty:
+            return df
+        df = df.copy()
+        df.sort_values(self._date_field_name, inplace=True)
+        df = df.set_index(self._date_field_name)
+        first_close = self._get_first_close(df)
+        for col in df.columns:
+            if col in [self._symbol_field_name, "change"]:
+                continue
+            if col == "volume":
+                df[col] = df[col] * first_close
+            else:
+                df[col] = df[col] / first_close
+        return df.reset_index()
+
+    def _get_first_close(self, df: pd.DataFrame) -> float:
+        """
+        Get the first valid close value for normalization.
+        """
+        df = df.loc[df["close"].first_valid_index():]
+        return df["close"].iloc[0]
 
     def _get_calendar_list(self) -> Iterable[pd.Timestamp]:
         """
-        Generate a list of trading dates for normalization.
+        Generate a calendar list for 1d data.
         """
-        return D.calendar(freq="day")
+        # Use Qlib's calendar API to get the trading calendar
+        return get_calendar_list("CSI300")
 
 
 class Run(BaseRun):
@@ -198,7 +240,7 @@ class Run(BaseRun):
         check_data_length=None,
         limit_nums=None,
     ):
-        """download data from Baostock"""
+        """Download data from Baostock"""
         super(Run, self).download_data(max_collector_count, delay, start, end, check_data_length, limit_nums)
 
     def normalize_data(
@@ -206,11 +248,10 @@ class Run(BaseRun):
         date_field_name: str = "date",
         symbol_field_name: str = "symbol",
         end_date: str = None,
-        qlib_data_1d_dir: str = None,
     ):
-
+        """Normalize data for 1d interval"""
         super(Run, self).normalize_data(
-            date_field_name, symbol_field_name, end_date=end_date, qlib_data_1d_dir=qlib_data_1d_dir
+            date_field_name, symbol_field_name, end_date=end_date
         )
 
 

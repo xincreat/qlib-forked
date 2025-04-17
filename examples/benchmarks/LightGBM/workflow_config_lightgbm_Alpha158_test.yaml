@@ -1,5 +1,5 @@
 qlib_init:
-    provider_uri: "~/.qlib/qlib_data/cn_data"
+    provider_uri: "D:/ProgramCoding/Data/stock_data/qlib_data/cn_data"
     region: cn
 market: &market csi300
 benchmark: &benchmark SH000300
@@ -19,7 +19,7 @@ port_analysis_config: &port_analysis_config
             n_drop: 5
     backtest:
         start_time: 2024-01-01
-        end_time: 2024-11-13
+        end_time: 2024-11-01
         account: 100000000
         benchmark: *benchmark
         exchange_kwargs:
@@ -53,7 +53,7 @@ task:
             segments:
                 train: [2017-01-01, 2021-12-31]
                 valid: [2022-01-01, 2023-12-31]
-                test: [2024-01-01, 2024-11-13]
+                test: [2024-01-01, 2024-11-01]
     record: 
         - class: SignalRecord
           module_path: qlib.workflow.record_temp

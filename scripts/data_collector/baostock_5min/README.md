@@ -35,8 +35,8 @@
           python collector.py download_data --source_dir ~/.qlib/stock_data/source/hs300_5min_original --start 2022-01-01 --end 2022-01-30 --interval 5min --region HS300
           ```
           ```
-          python collector.py download_data --source_dir D:/Codes/Data/stock_data/source/hs300_5min_original --start 2022-01-01 --end 2022-01-30 --interval 5min --region HS300
-          python collector.py download_data --source_dir D:/ProgramCoding/Data/stock_data/source/hs300_5min_original --start 2022-01-01 --end 2022-01-07 --interval 5min --region HS300
+          python baostock_5min/collector.py download_data --source_dir D:/Codes/Data/stock_data/source/hs300_5min_original --start 2025-03-01 --end 2025-04-16 --interval 5min --region HS300
+          python baostock_5min/collector.py download_data --source_dir D:/ProgramCoding/Data/stock_data/source/hs300_5min_original --start 2025-03-01 --end 2025-04-16 --interval 5min --region HS300
           ```
   2. normalize data: `python scripts/data_collector/baostock_5min/collector.py normalize_data`
      
@@ -63,6 +63,10 @@
         # normalize 5min cn
         python collector.py normalize_data --qlib_data_1d_dir ~/.qlib/qlib_data/cn_data --source_dir ~/.qlib/stock_data/source/hs300_5min_original --normalize_dir ~/.qlib/stock_data/source/hs300_5min_nor --region HS300 --interval 5min
         ```
+        ```
+          shall delete "SH600837.csv" first, 已退市.
+        python baostock_5min/collector.py normalize_data --qlib_data_1d_dir D:/ProgramCoding/Data/stock_data/qlib_data/hs300_1d_bin --source_dir D:/ProgramCoding/Data/stock_data/source/hs300_5min_original --normalize_dir D:/ProgramCoding/Data/stock_data/source/hs300_5min_nor --region HS300 --interval 5min
+        ```
   3. dump data: `python scripts/dump_bin.py dump_all`
     
      This will convert the normalized csv in `feature` directory as numpy array and store the normalized data one file per column and one symbol per directory. 
@@ -82,4 +86,7 @@
        ```bash
        # dump 5min cn
        python dump_bin.py dump_all --csv_path ~/.qlib/stock_data/source/hs300_5min_nor --qlib_dir ~/.qlib/qlib_data/hs300_5min_bin --freq 5min --exclude_fields date,symbol
+       ```
+       ```
+       python dump_bin.py dump_all --csv_path D:/ProgramCoding/Data/stock_data/source/hs300_5min_nor --qlib_dir D:/ProgramCoding/Data/stock_data/qlib_data/hs300_5min_bin --freq 5min --exclude_fields date,symbol
        ```

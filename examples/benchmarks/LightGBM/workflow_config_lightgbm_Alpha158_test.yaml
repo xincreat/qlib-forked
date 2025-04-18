@@ -1,13 +1,14 @@
+# qrun benchmarks/LightGBM/workflow_config_lightgbm_Alpha158_test.yaml
 qlib_init:
-    provider_uri: "D:/ProgramCoding/Data/stock_data/qlib_data/cn_data"
+    provider_uri: "D:/ProgramCoding/Data/stock_data/qlib_data/hs300_1d_bin"
     region: cn
 market: &market csi300
 benchmark: &benchmark SH000300
 data_handler_config: &data_handler_config
-    start_time: 2017-01-01
-    end_time: 2024-11-13
-    fit_start_time: 2017-01-01
-    fit_end_time: 2021-12-31
+    start_time: 2022-01-01
+    end_time: 2025-04-16
+    fit_start_time: 2022-01-01
+    fit_end_time: 2023-12-31
     instruments: *market
 port_analysis_config: &port_analysis_config
     strategy:
@@ -15,11 +16,11 @@ port_analysis_config: &port_analysis_config
         module_path: qlib.contrib.strategy
         kwargs:
             signal: <PRED>
-            topk: 50
-            n_drop: 5
+            topk: 30
+            n_drop: 2
     backtest:
         start_time: 2024-01-01
-        end_time: 2024-11-01
+        end_time: 2024-10-01
         account: 100000000
         benchmark: *benchmark
         exchange_kwargs:
@@ -51,9 +52,9 @@ task:
                 module_path: qlib.contrib.data.handler
                 kwargs: *data_handler_config
             segments:
-                train: [2017-01-01, 2021-12-31]
-                valid: [2022-01-01, 2023-12-31]
-                test: [2024-01-01, 2024-11-01]
+                train: [2022-01-01, 2023-12-31]
+                valid: [2024-11-01, 2025-03-31]
+                test: [2024-01-01, 2024-10-01]
     record: 
         - class: SignalRecord
           module_path: qlib.workflow.record_temp

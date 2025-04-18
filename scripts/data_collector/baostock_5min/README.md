@@ -36,7 +36,7 @@
           ```
           ```
           python baostock_5min/collector.py download_data --source_dir D:/Codes/Data/stock_data/source/hs300_5min_original --start 2025-03-01 --end 2025-04-16 --interval 5min --region HS300
-          python baostock_5min/collector.py download_data --source_dir D:/ProgramCoding/Data/stock_data/source/hs300_5min_original --start 2025-03-01 --end 2025-04-16 --interval 5min --region HS300
+          python baostock_5min/collector.py download_data --source_dir D:/ProgramCoding/Data/stock_data/source/hs300_5min_original --start 2024-06-01 --end 2025-04-17 --interval 5min --region HS300
           ```
   2. normalize data: `python scripts/data_collector/baostock_5min/collector.py normalize_data`
      

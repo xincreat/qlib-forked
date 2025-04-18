@@ -85,5 +85,5 @@
        ```
        ```
        python dump_bin.py dump_all --csv_path D:/Codes/Data/stock_data/source/hs300_1d_nor --qlib_dir D:/Codes/Data/stock_data/qlib_data/hs300_1d_bin --freq day --exclude_fields date,symbol
-       python dump_bin.py dump_all --csv_path D:/ProgramCoding/Data/stock_data/source/hs300_1d_nor --qlib_dir D:/ProgramCoding/Data/stock_data/qlib_data/hs300_1d_bin --freq day --exclude_fields date,symbol,adjustflag
+       python dump_bin.py dump_all --csv_path D:/ProgramCoding/Data/stock_data/source/hs300_1d_nor --qlib_dir D:/ProgramCoding/Data/stock_data/qlib_data/hs300_1d_bin --freq day --exclude_fields date,symbol
        ```

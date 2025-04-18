@@ -116,7 +116,7 @@ class BaostockCollectorHS3005min(BaseCollector):
             start_date=str(start_datetime.strftime("%Y-%m-%d")),
             end_date=str(end_datetime.strftime("%Y-%m-%d")),
             frequency=BaostockCollectorHS3005min.process_interval(interval=interval)["interval"],
-            adjustflag="3",
+            adjustflag="2",
         )
         if rs.error_code == "0" and len(rs.data) > 0:
             data_list = rs.data
@@ -125,15 +125,28 @@ class BaostockCollectorHS3005min(BaseCollector):
         return df
 
     def get_hs300_symbols(self) -> List[str]:
-        hs300_stocks = []
-        trade_calendar = self.get_trade_calendar()
-        with tqdm(total=len(trade_calendar)) as p_bar:
-            for date in trade_calendar:
-                rs = bs.query_hs300_stocks(date=date)
-                while rs.error_code == "0" and rs.next():
-                    hs300_stocks.append(rs.get_row_data())
-                p_bar.update()
-        return sorted({e[1] for e in hs300_stocks})
+        # hs300_stocks = []
+        # trade_calendar = self.get_trade_calendar()
+        # with tqdm(total=len(trade_calendar)) as p_bar:
+        #     for date in trade_calendar:
+        #         rs = bs.query_hs300_stocks(date=date)
+        #         while rs.error_code == "0" and rs.next():
+        #             hs300_stocks.append(rs.get_row_data())
+        #         p_bar.update()
+        # return sorted({e[1] for e in hs300_stocks})
+        import os
+        import json
+        filepath = os.path.join(CUR_DIR, "hs300_stock_codes.json")
+        logger.info(filepath)
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                symbols = json.load(f)
+                # symbols = [symbol.replace(".", "").upper() for symbol in symbols]
+                logger.info(f"成功加载 {len(symbols)} 个股票代码")
+                return symbols
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            logger.info(f"加载失败: {str(e)}")
+            return []
 
     def get_instrument_list(self):
         logger.info("get HS stock symbols......")

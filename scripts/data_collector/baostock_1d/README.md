@@ -35,7 +35,6 @@
           python collector.py download_data --source_dir ~/.qlib/stock_data/source/hs300_1d_original --start 2022-01-01 --end 2022-01-30 --interval 1d --region HS300
           ```
           ```
-          python baostock_1d/collector.py download_data --source_dir D:/Codes/Data/stock_data/source/hs300_1d_original --start 2025-01-01 --end 2025-04-15 --interval 1d --region HS300
           python baostock_1d/collector.py download_data --source_dir D:/ProgramCoding/Data/stock_data/source/hs300_1d_original --start 2020-01-01 --end 2025-04-16 --interval 1d --region HS300
           ```
   2. normalize data: `python scripts/data_collector/yahoo/collector.py normalize_data`
@@ -60,7 +59,6 @@
         ```bash
         # normalize 1d cn
         ```
-        python yahoo/collector.py normalize_data --source_dir D:/Codes/Data/stock_data/source/hs300_1d_original --normalize_dir D:/Codes/Data/stock_data/source/hs300_1d_nor --region CN --interval 1d
         python yahoo/collector.py normalize_data --source_dir D:/ProgramCoding/Data/stock_data/source/hs300_1d_original --normalize_dir D:/ProgramCoding/Data/stock_data/source/hs300_1d_nor --region CN --interval 1d
         ```
   3. dump data: `python scripts/dump_bin.py dump_all`
@@ -84,6 +82,5 @@
        python dump_bin.py dump_all --csv_path ~/.qlib/stock_data/source/hs300_1d_nor --qlib_dir ~/.qlib/qlib_data/hs300_1d_bin --freq 1d --exclude_fields date,symbol
        ```
        ```
-       python dump_bin.py dump_all --csv_path D:/Codes/Data/stock_data/source/hs300_1d_nor --qlib_dir D:/Codes/Data/stock_data/qlib_data/hs300_1d_bin --freq day --exclude_fields date,symbol
        python dump_bin.py dump_all --csv_path D:/ProgramCoding/Data/stock_data/source/hs300_1d_nor --qlib_dir D:/ProgramCoding/Data/stock_data/qlib_data/hs300_1d_bin --freq day --exclude_fields date,symbol
        ```
